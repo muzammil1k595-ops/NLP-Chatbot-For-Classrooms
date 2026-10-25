@@ -1,0 +1,28 @@
+!pip install -q transformers torch
+from transformers import pipeline
+
+# Load a lightweight model directly into Colab memory (no API key needed)
+print("Loading local model... (takes ~20 seconds on first run)")
+chatbot = pipeline("text-generation", model="Qwen/Qwen2.5-0.5B-Instruct")
+
+content_topic = "photosynthesis"
+print(f"\nAgent: Hello! Today we are exploring {content_topic}. What do you already know about how plants get their food?")
+
+while True:
+    user_text = input("Student: ")
+    if user_text.lower() in ["exit", "quit", "stop"]:
+        print("Agent: Great job today! Keep practicing your English. Goodbye!")
+        break
+
+    messages = [
+        {
+            "role": "system",
+            "content": f"You are a helpful, encouraging English tutor teaching a student about {content_topic}. Keep responses concise (2-3 sentences).",
+        },
+        {"role": "user", "content": user_text},
+    ]
+
+    # Generate response locally
+    output = chatbot(messages, max_new_tokens=100)
+    reply = output[0]["generated_text"][-1]["content"]
+    print(f"\nAgent: {reply}\n")
